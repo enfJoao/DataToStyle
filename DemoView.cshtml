@@ -1,0 +1,57 @@
+@inherits Custom.Dnn.Razor12
+@using ToSic.Sxc.Services;
+
+@{
+    var styleData = AsList(App.Data["StylesDemoData"]);
+}
+
+<style>
+    @foreach (var d in styleData)
+    {
+        if(d.Trigger == "Permanent" ||
+            (d.Trigger == "Weekday" && ((int)DateTime.Now.DayOfWeek).ToString() == d.TriggerValue) ||
+            (d.Trigger == "Username" && Dnn.User.Username == d.TriggerValue) ||
+            (d.Trigger == "SkinPath" && Dnn.Tab.SkinPath == d.TriggerValue)
+        )
+        {
+            @(d.Target + " {")
+            foreach (var p in d.Properties)
+            {
+                @(p.CSSProperty + ": " + p.CSSValue + ";")
+            }
+            @("}")
+        }
+    }
+
+</style>
+
+<div @Edit.TagToolbar(Content)>
+    <h4 @Edit.TagToolbar(actions: "new", contentType: "StylesDemoData", settings: new { hover = "left" })>A simply overcomplex way to style your page with 2sxc</h4>
+
+    <table id="demoStyles">
+        <thead>
+            <tr>
+                <th class="thColor">Trigger</th>
+                <th class="thColor">TriggerValue</th>
+                <th class="thColor">Target</th>
+                <th class="thColor">Properties</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in styleData)
+            {
+                <tr>
+                    <td @Edit.TagToolbar(d, actions: "edit")>@d.Trigger</td>
+                    <td>@d.TriggerValue</td>
+                    <td>@d.Target</td>
+                    <td>
+                        @foreach (var p in d.Properties)
+                        {
+                            <div @Edit.TagToolbar(p, actions: "edit")>@p.CSSProperty: @p.CSSValue</div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
